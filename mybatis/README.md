@@ -1,12 +1,5 @@
 # Roach Demo Data :: MyBatis
 
-Spring Boot Demo using CockroachDB with MyBatis/JDBC.
-
-## Run
-
-    java -jar target/roach-demo-data.jar
-
-With a custom db URL:
-
-    java -jar target/roach-demo-data.jar --spring.datasource.url=jdbc:postgresql://localhost:26257/roach_demo_data?sslmode=disable
-    
+A CockroachDB Spring Boot Demo using [MyBatis](https://mybatis.org/mybatis-3/)
+integrated with [Spring Data JDBC](https://docs.spring.io/spring-data/jdbc/docs/1.1.6.RELEASE/reference/html/#jdbc.mybatis) 
+for data access.

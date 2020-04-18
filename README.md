@@ -23,8 +23,8 @@ Common Spring Boot features in all demos:
 - Hypermedia API via Spring HATEOAS and HAL media type
 - Simple HTTP client invoking commands
 
-The most documented demo is the JDBC version. It also includes an extra aspect for setting
-transaction attributes including time travel / follower reads.
+The most documented demo is the JDBC version. It includes an extra aspect for setting transaction attributes such 
+as time travel / follower reads. 
 
 ## Prerequisites
 

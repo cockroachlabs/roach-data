@@ -263,7 +263,7 @@ interface AccountRepository extends CrudRepository<Account, Long>, PagedAccountR
     @Query("SELECT balance FROM account WHERE id = :id")
     BigDecimal getBalance(@Param("id") Long id);
 
-    @Query("UPDATE Account set balance = balance + :balance where id=:id")
+    @Query("UPDATE account SET balance = balance + :balance WHERE id=:id")
     @Modifying
     void updateBalance(@Param("id") Long id, @Param("balance") BigDecimal balance);
 }

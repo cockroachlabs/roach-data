@@ -155,7 +155,7 @@ enum AccountType {
 
 @Entity
 @Table(name = "account")
-class AccountEntity {
+class Account {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -223,14 +223,14 @@ class AccountModel extends RepresentationModel<AccountModel> {
 
 @Repository
 @Transactional(propagation = MANDATORY)
-interface AccountRepository extends JpaRepository<AccountEntity, Long>,
-        JpaSpecificationExecutor<AccountEntity> {
+interface AccountRepository extends JpaRepository<Account, Long>,
+        JpaSpecificationExecutor<Account> {
 
-    @Query(value = "select balance from AccountEntity where id=?1")
+    @Query(value = "select balance from Account where id=?1")
     BigDecimal getBalance(Long id);
 
     @Modifying
-    @Query("update AccountEntity set balance = balance + ?2 where id=?1")
+    @Query("update Account set balance = balance + ?2 where id=?1")
     void updateBalance(Long id, BigDecimal balance);
 }
 
@@ -247,7 +247,7 @@ class AccountController {
     private AccountRepository accountRepository;
 
     @Autowired
-    private PagedResourcesAssembler<AccountEntity> pagedResourcesAssembler;
+    private PagedResourcesAssembler<Account> pagedResourcesAssembler;
 
     @GetMapping
     public ResponseEntity<RepresentationModel> index() {
@@ -305,7 +305,7 @@ class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    private RepresentationModelAssembler<AccountEntity, AccountModel> accountModelAssembler() {
+    private RepresentationModelAssembler<Account, AccountModel> accountModelAssembler() {
         return (entity) -> {
             AccountModel model = new AccountModel();
             model.setName(entity.getName());

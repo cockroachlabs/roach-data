@@ -106,6 +106,9 @@ public class JdbcApplication extends AbstractJdbcConfiguration implements WebMvc
         testClient();
     }
 
+    /**
+     * Client logic that submits money transfer requests to the REST API.
+     */
     public static void testClient() {
         logger.info("Lets move some $$ around!");
 
@@ -164,6 +167,9 @@ enum AccountType {
     expense
 }
 
+/**
+ * Domain entity mapped to the account table.
+ */
 class Account {
     @Id
     private Long id;
@@ -191,6 +197,9 @@ class Account {
     }
 }
 
+/**
+ * Account resource represented in HAL+JSON via REST API.
+ */
 @Relation(value = "account", collectionRelation = "accounts")
 class AccountModel extends RepresentationModel<AccountModel> {
     private String name;
@@ -225,8 +234,8 @@ class AccountModel extends RepresentationModel<AccountModel> {
 }
 
 /**
- * Pagination is not available in spring-data-jdbc yet so we create a separate
- * repository to provide basic limit+offset pagination of accounts.
+ * Pagination is not available in spring-data-jdbc (yet) so we create a separate
+ * repository to provide basic limit+offset pagination queries for accounts.
  */
 interface PagedAccountRepository {
     Page<Account> findAll(Pageable pageable);
@@ -234,18 +243,15 @@ interface PagedAccountRepository {
 
 @Repository
 interface PagedAccountHelper extends org.springframework.data.repository.Repository<Account, Long> {
-    /**
-     * Selects a page of accounts using follower reads.
-     */
     @Query("SELECT * FROM account LIMIT :pageSize OFFSET :offset")
     List<Account> findAll(@Param("pageSize") int pageSize, @Param("offset") long offset);
 
-    @Query("SELECT count(id) from account")
+    @Query("SELECT count(id) FROM account")
     long countAll();
 }
 
 @Repository
-// @Transactional is not needed, only here for clarity since we want the repo to always be called from a tx context
+// @Transactional is not needed but here for clarity since we want repos to always be called from a tx context
 @Transactional(propagation = MANDATORY)
 class PagedAccountRepositoryImpl implements PagedAccountRepository {
     @Autowired
@@ -262,15 +268,17 @@ class PagedAccountRepositoryImpl implements PagedAccountRepository {
 /**
  * The main account repository, notice there's no implementation needed since its auto-proxied by
  * spring-data.
+ * <p>
+ * Should have extended PagingAndSortingRepository in normal cases.
  */
 @Repository
 @Transactional(propagation = MANDATORY)
 interface AccountRepository extends CrudRepository<Account, Long>, PagedAccountRepository {
-    @Query(value = "select balance from account where id=:id")
+    @Query(value = "SELECT balance FROM account WHERE id=:id")
     BigDecimal getBalance(@Param("id") Long id);
 
     @Modifying
-    @Query("update account set balance = balance + :balance where id=:id")
+    @Query("UPDATE account SET balance = balance + :balance WHERE id=:id")
     void updateBalance(@Param("id") Long id, @Param("balance") BigDecimal balance);
 }
 
@@ -285,7 +293,7 @@ class NegativeBalanceException extends DataIntegrityViolationException {
 }
 
 /**
- * Annotation marking a transaction boundary to use time travel.
+ * Annotation marking a transaction boundary to use follower reads (time travel).
  * See https://www.cockroachlabs.com/docs/stable/follower-reads.html
  */
 @Inherited
@@ -299,12 +307,16 @@ class NegativeBalanceException extends DataIntegrityViolationException {
 /**
  * Main remoting and transaction boundary in the form of a REST controller. The discipline
  * when following the entity-control-boundary (ECB) pattern is that only service boundaries
- * are allowed to start and end transactions. That is enforced by the REQUIRES_NEW propagation
- * attribute of transactional controller methods. Between the web container's HTTP listener
- * and the transaction proxy there's also another transparent proxy in the form of a
- * retry loop advice with exponential backoff. It takes care of retrying transactions that
- * are aborted by transient SQL errors, rather than having these propagate all the way
- * over the wire to the HTTP client. See RetryableTransactionAspect below.
+ * are allowed to start and end transactions. A service boundary can be a controller, business
+ * service facade or service activator (JMS/Kafka listener).
+ * <p>
+ * This is enforced by the REQUIRES_NEW propagation attribute of @Transactional annotated
+ * controller methods. Between the web container's HTTP listener and the transaction proxy,
+ * there's yet another transparent proxy in the form of a retry loop advice with exponential
+ * backoff. It takes care of retrying transactions that are aborted by transient SQL errors,
+ * rather than having these propagate all the way over the wire to the client / user agent.
+ *
+ * @see RetryableTransactionAspect
  */
 @RestController
 class AccountController {
@@ -325,10 +337,11 @@ class AccountController {
         // Type-safe way to generate URLs bound to controller methods
         index.add(linkTo(methodOn(AccountController.class)
                 .listAccounts(PageRequest.of(0, 5)))
-                .withRel("accounts"));
+                .withRel("accounts")); // Lets skip curies and affordances for now
 
-        // This essentially informs the client that a POST to a href with this rel
-        // and value parameters will transfer funds between accounts.
+        // This rel essentially informs the client that a POST to its href with
+        // form parameters will transfer funds between referenced accounts.
+        // (its only a demo)
         index.add(linkTo(AccountController.class)
                 .slash("transfer{?fromId,toId,amount}")
                 .withRel("transfer"));
@@ -350,7 +363,7 @@ class AccountController {
      */
     @GetMapping("/account")
     @Transactional(propagation = REQUIRES_NEW)
-    @TimeTravel
+    @TimeTravel // We dont need the result to be authoritative, so any follower replica can service the read
     public HttpEntity<PagedModel<AccountModel>> listAccounts(
             @PageableDefault(size = 5, direction = Sort.Direction.ASC) Pageable page) {
         return ResponseEntity
@@ -361,7 +374,7 @@ class AccountController {
      * Provides a point lookup of a given account.
      */
     @GetMapping(value = "/account/{id}")
-    @Transactional(propagation = REQUIRES_NEW, readOnly = true)
+    @Transactional(propagation = REQUIRES_NEW, readOnly = true) // Notice its marked read-only
     public HttpEntity<AccountModel> getAccount(@PathVariable("id") Long accountId) {
         return new ResponseEntity<>(accountModelAssembler().toModel(
                 accountRepository.findById(accountId)

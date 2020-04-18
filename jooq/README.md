@@ -1,10 +1,10 @@
 # Roach Demo Data :: jOOQ
 
-Spring Boot Demo using CockroachDB with jOOQ.
+A CockroachDB Spring Boot Demo using [jOOQ](https://www.jooq.org/) for data access.
 
 ## Generate jOOQ classes
 
-First create a DB schema:
+First create the DB schema:
 
     create table account
     (
@@ -14,21 +14,13 @@ First create a DB schema:
         type    varchar(25)    not null
     );
 
-Then generate the code by activating a Maven profile called generate:
+Then generate code by activating a Maven profile called _generate_:
 
     mvn -P generate clean install
    
 (Note: this will fail with an error when using CRDB even if classes are generated correctly)    
 
-Finally drop the table:
+Finally drop the table
 
     drop table account cascade;
-    
-## Run
-
-    java -jar target/roach-demo-data.jar
-
-Run with custom db URL:
-
-    java -jar target/roach-demo-data.jar --spring.datasource.url=jdbc:postgresql://localhost:26257/roach_demo_data?sslmode=disable
     

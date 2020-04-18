@@ -35,12 +35,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-commons</artifactId>
-        </dependency>
--->
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
@@ -58,16 +52,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-<!--
-                <executions>
-                    <execution>
-                        <configuration>
-                            <executable>true</executable>
-                            <mainClass>io.roach.demo.data.JdbcApplication</mainClass>
-                        </configuration>
-                    </execution>
-                </executions>
--->
             </plugin>
         </plugins>
     </build>
