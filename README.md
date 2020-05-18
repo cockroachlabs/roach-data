@@ -6,10 +6,10 @@ stack composed by Spring Boot, Spring Data and Spring HATEOAS.
 
 Data access variants include:
 
-- [JDBC](jdbc/README.md) - using Spring Data JDBC 
-- [JPA](jpa/README.md) - using Spring Data JPA with Hibernate as ORM provider 
-- [jOOQ](jooq/README.md) - using Spring Boot with jOOQ (not officially supported by spring-data) 
-- [MyBatis](mybatis/README.md) - using Spring Data MyBatis/JDBC
+- [JDBC](roach-data-jdbc/README.md) - using Spring Data JDBC 
+- [JPA](roach-data-jpa/README.md) - using Spring Data JPA with Hibernate as ORM provider 
+- [jOOQ](roach-data-jooq/README.md) - using Spring Boot with jOOQ (not officially supported by spring-data) 
+- [MyBatis](roach-data-mybatis/README.md) - using Spring Data MyBatis/JDBC
 
 All demos are independent and use the same schema and test workload. 
 
@@ -30,7 +30,7 @@ as time travel / follower reads.
 
 - JDK8+ with 1.8 language level (OpenJDK compatible)
 - Maven 3+ (wrapper provided)
-- CockroachDB with a database named `roach_demo_data` 
+- CockroachDB with a database named `roach_data` 
 
 ## Building
 
@@ -56,20 +56,20 @@ You could use something like Postman to send requests to the API on your own.
 
 A custom database URL is specified with a config override:
 
-    --spring.datasource.url=jdbc:postgresql://192.168.1.99:26257/roach_demo_data?sslmode=disable
+    --spring.datasource.url=jdbc:postgresql://192.168.1.99:26257/roach_data?sslmode=disable
     
 ### JDBC demo
 
-    java -jar jdbc/target/roach-demo-data.jar 
+    java -jar roach-data-jdbc/target/roach-data-jdbc.jar 
 
 ### JPA demo
 
-    java -jar jpa/target/roach-demo-data.jar
+    java -jar roach-data-jpa/target/roach-data-jpa.jar
 
 ### jOOQ demo
 
-    java -jar jooq/target/roach-demo-data.jar
+    java -jar roach-data-jooq/target/roach-data-jooq.jar
 
 ### MyBatis demo
 
-    java -jar mybatis/target/roach-demo-data.jar
+    java -jar roach-data-mybatis/target/roach-data-mybatis.jar
