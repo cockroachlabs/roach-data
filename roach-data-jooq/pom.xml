@@ -113,10 +113,10 @@
                                             <name>org.jooq.meta.postgres.PostgresDatabase</name>
                                             <includes>.*</includes>
                                             <inputSchema>public</inputSchema>
-<!--                                            <inputSchema>roach_data</inputSchema>-->
+                                            <!--                                            <inputSchema>roach_data</inputSchema>-->
                                         </database>
                                         <target>
-                                            <packageName>io.roach.data.jooq</packageName>
+                                            <packageName>io.roach.data.jooq.model</packageName>
                                             <directory>${project.build.sourceDirectory}</directory>
                                         </target>
                                     </generator>
