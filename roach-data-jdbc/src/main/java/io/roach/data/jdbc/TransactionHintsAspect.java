@@ -38,10 +38,6 @@ public class TransactionHintsAspect {
     public void anyTransactionBoundaryOperation(Transactional transactional) {
     }
 
-    @Pointcut("execution(* io.roach..*(..)) && @annotation(followerRead)")
-    public void anyFollowerReadOperation(TimeTravel followerRead) {
-    }
-
     @Around(value = "anyTransactionBoundaryOperation(transactional)",
             argNames = "pjp,transactional")
     public Object setTransactionAttributes(ProceedingJoinPoint pjp, Transactional transactional)
@@ -60,23 +56,6 @@ public class TransactionHintsAspect {
         if (transactional.readOnly()) {
             logger.info("Setting transaction read only for {}", pjp.getSignature().toShortString());
             jdbcTemplate.execute("SET transaction_read_only=true");
-        }
-
-        return pjp.proceed();
-    }
-
-    @Around(value = "anyFollowerReadOperation(timeTravel)",
-            argNames = "pjp,timeTravel")
-    public Object setTimeTravelAttributes(ProceedingJoinPoint pjp, TimeTravel timeTravel)
-            throws Throwable {
-        Assert.isTrue(TransactionSynchronizationManager.isActualTransactionActive(), "TX not active");
-
-        logger.info("Providing {} via follower read", pjp.getSignature().toShortString());
-
-        if (timeTravel.value() >= 0) {
-            jdbcTemplate.update("SET TRANSACTION AS OF SYSTEM TIME INTERVAL '" + timeTravel.value() + "'");
-        } else {
-            jdbcTemplate.execute("SET TRANSACTION AS OF SYSTEM TIME experimental_follower_read_timestamp()");
         }
 
         return pjp.proceed();
