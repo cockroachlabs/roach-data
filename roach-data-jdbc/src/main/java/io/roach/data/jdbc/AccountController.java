@@ -84,7 +84,6 @@ public class AccountController {
      */
     @GetMapping("/account")
     @Transactional(propagation = REQUIRES_NEW)
-    @TimeTravel // We dont need the result to be authoritative, so any follower replica can service the read
     public HttpEntity<PagedModel<AccountModel>> listAccounts(
             @PageableDefault(size = 5, direction = Sort.Direction.ASC) Pageable page) {
         return ResponseEntity

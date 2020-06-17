@@ -14,14 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.Ordered;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpEntity;
@@ -33,14 +30,11 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Spring boot server application using spring-data-jdbc for data access.
  */
-@EnableAutoConfiguration
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 @EnableJdbcRepositories
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@EnableSpringDataWebSupport
 @EnableTransactionManagement(order = Ordered.LOWEST_PRECEDENCE - 1) // Bump up one level to enable extra advisors
-@Configuration
-@ComponentScan
+@SpringBootApplication
 public class JdbcApplication implements CommandLineRunner {
     protected static final Logger logger = LoggerFactory.getLogger(JdbcApplication.class);
 

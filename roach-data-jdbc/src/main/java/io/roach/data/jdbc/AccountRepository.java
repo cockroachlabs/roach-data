@@ -14,8 +14,6 @@ import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 /**
  * The main account repository, notice there's no implementation needed since its auto-proxied by
  * spring-data.
- * <p>
- * Should have extended PagingAndSortingRepository in normal cases.
  */
 @Repository
 @Transactional(propagation = MANDATORY)
