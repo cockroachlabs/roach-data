@@ -14,14 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.core.Ordered;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpEntity;
@@ -30,14 +26,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-@EnableAutoConfiguration
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 @EnableJpaRepositories
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@EnableSpringDataWebSupport
-@EnableTransactionManagement(order = Ordered.LOWEST_PRECEDENCE - 1)
-@Configuration
-@ComponentScan
+@EnableTransactionManagement
+@SpringBootApplication
 public class JpaApplication implements CommandLineRunner {
     protected static final Logger logger = LoggerFactory.getLogger(JpaApplication.class);
 

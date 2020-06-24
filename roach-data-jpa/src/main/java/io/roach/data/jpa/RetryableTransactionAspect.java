@@ -22,7 +22,7 @@ import org.springframework.util.Assert;
 
 @Component
 @Aspect
-@Order(Ordered.LOWEST_PRECEDENCE - 2)
+@Order(Ordered.LOWEST_PRECEDENCE - 1)
 public class RetryableTransactionAspect {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
