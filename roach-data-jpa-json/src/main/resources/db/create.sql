@@ -74,3 +74,9 @@ create table chat_history
 
     INVERTED   INDEX message_payload (messages)
 );
+
+INSERT INTO chat_history (messages) VALUES
+('[
+    {"title": "Sleeping Beauties", "genres": ["Fiction", "Thriller", "Horror"], "published": false},
+    {"title": "The Dictator''s Handbook", "genres": ["Law", "Politics"], "authors": ["Bruce Bueno de Mesquita", "Alastair Smith"], "published": true}
+]');

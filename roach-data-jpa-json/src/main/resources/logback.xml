@@ -12,8 +12,8 @@
     <logger name="org.springframework.jdbc.core" level="DEBUG"/>
     <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG"/>
 
-    <logger name="org.hibernate.SQL" level="DEBUG"/>
-    <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
+<!--    <logger name="org.hibernate.SQL" level="DEBUG"/>-->
+<!--    <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>-->
 
     <logger name="io.roach" level="DEBUG"/>
 

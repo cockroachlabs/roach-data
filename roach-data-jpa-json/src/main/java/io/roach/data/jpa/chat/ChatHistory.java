@@ -8,16 +8,18 @@ import javax.persistence.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.roach.data.jpa.support.AbstractJsonDataType;
 
 @Entity
 @Table(name = "chat_history")
 @TypeDef(name = "jsonb-message", typeClass = ChatHistory.StringCollectionJsonType.class)
 public class ChatHistory {
-    public static class StringCollectionJsonType extends AbstractJsonDataType<String> {
+    public static class StringCollectionJsonType extends AbstractJsonDataType<JsonNode> {
         @Override
-        public Class<String> returnedClass() {
-            return String.class;
+        public Class<JsonNode> returnedClass() {
+            return JsonNode.class;
         }
 
         @Override
@@ -37,7 +39,7 @@ public class ChatHistory {
     @Type(type = "jsonb-message")
     @Column(name = "messages")
     @Basic(fetch = FetchType.LAZY)
-    private List<String> messages;
+    private List<JsonNode> messages;
 
     public UUID getId() {
         return id;
@@ -51,11 +53,11 @@ public class ChatHistory {
         this.parent = parent;
     }
 
-    public List<String> getMessages() {
+    public List<JsonNode> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<String> messages) {
+    public void setMessages(List<JsonNode> messages) {
         this.messages = messages;
     }
 }
