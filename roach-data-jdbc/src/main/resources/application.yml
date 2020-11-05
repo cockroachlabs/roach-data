@@ -21,8 +21,8 @@ spring:
     username: root
     password:
     hikari:
-      connection-test-query: SELECT 1
       maximum-pool-size: 4
+      connection-init-sql: SELECT 1
 
   jpa:
     open-in-view: false
