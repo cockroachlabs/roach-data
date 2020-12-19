@@ -38,3 +38,6 @@ management:
   health:
     defaults:
       enabled: true
+
+server:
+  port: 9090

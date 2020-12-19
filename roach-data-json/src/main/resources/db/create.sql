@@ -1,9 +1,9 @@
 -- drop table if exists databasechangelog cascade;
 -- drop table if exists databasechangeloglock cascade;
-drop table if exists account cascade;
-drop table if exists journal cascade;
-drop table if exists transaction cascade;
-drop table if exists transaction_item cascade;
+-- drop table if exists account cascade;
+-- drop table if exists journal cascade;
+-- drop table if exists transaction cascade;
+-- drop table if exists transaction_item cascade;
 
 -- Stores immutable events in json format, mapped to entity types via JPA's single table inheritance model
 create table journal

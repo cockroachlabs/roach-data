@@ -1,9 +1,12 @@
-package io.roach.data.json;
+package io.roach.data.jpa;
 
 import java.math.BigDecimal;
 
+import javax.persistence.LockModeType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,6 +18,7 @@ import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 @Transactional(propagation = MANDATORY)
 public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpecificationExecutor<Account> {
     @Query(value = "select balance from Account where id=?1")
+    @Lock(LockModeType.PESSIMISTIC_READ)
     BigDecimal getBalance(Long id);
 
     @Modifying

@@ -1,4 +1,4 @@
-package io.roach.data.json;
+package io.roach.data.jpa;
 
 public enum AccountType {
     asset,

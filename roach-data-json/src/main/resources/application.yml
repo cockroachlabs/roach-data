@@ -13,6 +13,7 @@ spring:
     default-schema:
     drop-first: false
     enabled: true
+    contexts: crdb
 
   datasource:
     url: jdbc:postgresql://localhost:26257/roach_data?sslmode=disable
@@ -21,9 +22,15 @@ spring:
     password:
     hikari:
       connection-test-query: SELECT 1
+      auto-commit: true
 
   jpa:
     open-in-view: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.CockroachDB201Dialect
+        connection:
+          provider_disables_autocommit: false
+
+server:
+  port: 9090

@@ -1,4 +1,4 @@
-package io.roach.data.json;
+package io.roach.data.jpa;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

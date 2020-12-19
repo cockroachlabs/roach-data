@@ -28,3 +28,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.CockroachDB201Dialect
+    show-sql: false
+server:
+  port: 9090

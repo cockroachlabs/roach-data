@@ -34,11 +34,9 @@ import org.springframework.core.Ordered;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 @EnableAutoConfiguration
@@ -85,18 +83,20 @@ public class JooQApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("Lets move some $$ around!");
 
-        final Link transferLink = new Link("http://localhost:8080/transfer{?fromId,toId,amount}");
+        final Link transferLink = Link.of("http://localhost:9090/transfer/{?fromId,toId,amount}");
 
-        final int threads = Runtime.getRuntime().availableProcessors();
+        final int concurrency = args.length > 0 ? Integer.parseInt(args[0]) : 1;
 
-        final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(threads);
+        final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(concurrency);
 
-        Deque<Future<?>> futures = new ArrayDeque<>();
+        Deque<Future<Integer>> futures = new ArrayDeque<>();
 
-        for (int i = 0; i < threads; i++) {
-            Future<?> future = executorService.submit(() -> {
+        for (int i = 0; i < concurrency; i++) {
+            Future<Integer> future = executorService.submit(() -> {
+                RestTemplate template = new RestTemplate();
+                int errors = 0;
                 for (int j = 0; j < 100; j++) {
-                    int fromId = 1 + (int) Math.round(Math.random() * 3);
+                    int fromId = j % 4 + 1;
                     int toId = fromId % 4 + 1;
 
                     BigDecimal amount = new BigDecimal("10.00");
@@ -108,20 +108,27 @@ public class JooQApplication implements CommandLineRunner {
 
                     String uri = transferLink.expand(form).getHref();
 
+                    logger.debug("({}) Transfer {} from {} to {}", uri, amount, fromId, toId);
+
                     try {
-                        new RestTemplate().exchange(uri, HttpMethod.POST, new HttpEntity<>(null), String.class);
-                    } catch (HttpClientErrorException.BadRequest e) {
-                        logger.warn(e.getResponseBodyAsString());
+                        template.postForEntity(uri, null, String.class);
+                    } catch (HttpStatusCodeException e) {
+                        logger.warn(e.toString());
+                        errors++;
                     }
                 }
+                return errors;
             });
             futures.add(future);
         }
 
+        int totalErrors = 0;
+
         while (!futures.isEmpty()) {
             try {
-                futures.pop().get();
-                logger.info("Worker finished - {} remaining", futures.size());
+                int errors = futures.pop().get();
+                totalErrors += errors;
+                logger.info("Worker finished with {} errors - {} remaining", errors, futures.size());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (ExecutionException e) {
@@ -129,7 +136,8 @@ public class JooQApplication implements CommandLineRunner {
             }
         }
 
-        logger.info("All client workers finished but server keeps running. Have a nice day!");
+        logger.info("All client workers finished with {} errors and server keeps running. Have a nice day!",
+                totalErrors);
 
         executorService.shutdownNow();
     }

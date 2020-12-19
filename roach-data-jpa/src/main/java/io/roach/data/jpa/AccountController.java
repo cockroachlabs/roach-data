@@ -1,4 +1,4 @@
-package io.roach.data.json;
+package io.roach.data.jpa;
 
 import java.math.BigDecimal;
 
@@ -16,7 +16,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -76,9 +80,9 @@ public class AccountController {
 
         BigDecimal fromBalance = accountRepository.getBalance(fromId).add(amount.negate());
 
-        if (fromBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new NegativeBalanceException("Insufficient funds " + amount + " for account " + fromId);
-        }
+//        if (fromBalance.compareTo(BigDecimal.ZERO) < 0) {
+//            throw new NegativeBalanceException("Insufficient funds " + amount + " for account " + fromId);
+//        }
 
         accountRepository.updateBalance(fromId, amount.negate());
         accountRepository.updateBalance(toId, amount);

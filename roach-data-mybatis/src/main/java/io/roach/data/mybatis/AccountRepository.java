@@ -14,7 +14,7 @@ import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 @Repository
 @Transactional(propagation = MANDATORY)
 interface AccountRepository extends CrudRepository<Account, Long>, PagedAccountRepository {
-    @Query("SELECT balance FROM account WHERE id = :id")
+    @Query("SELECT balance FROM account WHERE id = :id FOR UPDATE")
     BigDecimal getBalance(@Param("id") Long id);
 
     @Query("UPDATE account SET balance = balance + :balance WHERE id=:id")

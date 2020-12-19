@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Business exception that maps to a given HTTP status code.
  */
-@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Negative balance")
+@ResponseStatus(value = HttpStatus.EXPECTATION_FAILED, reason = "Negative balance")
 public class NegativeBalanceException extends DataIntegrityViolationException {
     public NegativeBalanceException(String message) {
         super(message);

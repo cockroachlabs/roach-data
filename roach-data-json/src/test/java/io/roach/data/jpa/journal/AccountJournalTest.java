@@ -1,12 +1,14 @@
 package io.roach.data.json.journal;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.util.List;
 
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Commit;
+import org.springframework.test.annotation.Repeat;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +21,8 @@ public class AccountJournalTest extends AbstractIntegrationTest {
     private AccountJournalRepository repository;
 
     @Test
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Commit
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+//    @Commit
     @Order(1)
     public void whenCreatingAccountEventInJournal_thenComputedKeyIsReturnedFromPayload() {
         Account account1 = Account.builder()

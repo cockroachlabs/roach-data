@@ -13,12 +13,17 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -60,15 +65,16 @@ public class AccountController {
                 .listAccounts(PageRequest.of(0, 5)))
                 .withRel("accounts")); // Lets skip curies and affordances for now
 
-        // This rel essentially informs the client that a POST to its href with
-        // form parameters will transfer funds between referenced accounts.
-        // (its only a demo)
-        index.add(linkTo(AccountController.class)
-                .slash("transfer{?fromId,toId,amount}")
-                .withRel("transfer"));
+        index.add(Link.of(UriTemplate.of(linkTo(AccountController.class)
+                        .toUriComponentsBuilder().path(
+                        "/transfer/{?fromId,toId,amount}")  // RFC-6570 template
+                        .build().toUriString()),
+                "transfer"
+        ).withTitle("Transfer funds"));
+
 
         // Spring boot actuators for observability / monitoring
-        index.add(new Link(
+        index.add(Link.of(
                 ServletUriComponentsBuilder
                         .fromCurrentContextPath()
                         .pathSegment("actuator")

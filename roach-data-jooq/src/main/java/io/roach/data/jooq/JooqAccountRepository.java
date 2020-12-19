@@ -33,7 +33,9 @@ public class JooqAccountRepository implements AccountRepository {
 
     @Override
     public AccountRecord getOne(Long id) {
-        return dsl.selectFrom(ACCOUNT).where(ACCOUNT.ID.eq(id)).fetchOne();
+        return dsl.selectFrom(ACCOUNT)
+                .where(ACCOUNT.ID.eq(id))
+                .fetchOne();
     }
 
     @Override
@@ -41,6 +43,7 @@ public class JooqAccountRepository implements AccountRepository {
         return dsl.select(ACCOUNT.BALANCE)
                 .from(ACCOUNT)
                 .where(ACCOUNT.ID.eq(id))
+                .forUpdate()
                 .fetchOne()
                 .value1();
     }

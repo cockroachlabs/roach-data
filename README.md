@@ -7,13 +7,15 @@ stack composed by Spring Boot, Spring Data and Spring HATEOAS.
 Data access variants include:
 
 - [JDBC](roach-data-jdbc/README.md) - using Spring Data JDBC 
+- [JDBC (plain)](roach-data-jdbc-plain/README.md) - using plain JDBC 
 - [JPA](roach-data-jpa/README.md) - using Spring Data JPA with Hibernate as ORM provider 
 - [jOOQ](roach-data-jooq/README.md) - using Spring Boot with jOOQ (not officially supported by spring-data) 
 - [MyBatis](roach-data-mybatis/README.md) - using Spring Data MyBatis/JDBC
+- [JSON](roach-data-json/README.md) - using Spring Data JPA and JSONB types with inverted indexes
 
-All demos are independent and use the same schema and test workload. 
+Most demos are independent and use the same schema and test workload. 
 
-Common Spring Boot features in all demos:
+Common Spring Boot features demonstrated:
 
 - Liquibase Schema versioning
 - Hikari Connection Pool
@@ -23,8 +25,8 @@ Common Spring Boot features in all demos:
 - Hypermedia API via Spring HATEOAS and HAL media type
 - Simple HTTP client invoking commands
 
-The most documented demo is the JDBC version. It includes an extra aspect for setting transaction attributes such 
-as time travel / follower reads. 
+The most documented demo is the JDBC version. It includes an extra aspect for setting transaction 
+attributes such timeouts and read-only hints. 
 
 ## Prerequisites
 
@@ -40,27 +42,34 @@ See each respective module for more details.
 
 ## Running 
 
-All demos do the same thing which is to run through a series of concurrent account
-transfer requests. The requests are being intentionally submitted in such a way 
-it will cause lock contention in the database and thereby trigger aborts and retry's. 
-That's why the demo starts with a wall of warning messages, which is expected.
-It ends with the message:
+All demos do the same thing, which is to run through a series of concurrent account
+transfer requests. The requests are being intentionally submitted in a way that 
+will cause lock contention in the database and trigger aborts and retry's. 
 
-    "All client workers finished but server keeps running. Have a nice day!" 
+By default, the contention level is zero (serial execution) so you won't see any errors. 
+To observe these errors, pass a number (>1) to the command line representing the thread count. 
+Then you will see transaction conflicts and retries on the server side until the demo 
+settles with an end message:
+
+    "All client workers finished but server keeps running. Have a nice day!"
 
 The service remains running after the test is complete and can be access via: 
 
-- http://localhost:8080
+- http://localhost:9090
 
 You could use something like Postman to send requests to the API on your own.
 
 A custom database URL is specified with a config override:
 
-    --spring.datasource.url=jdbc:postgresql://192.168.1.99:26257/roach_data?sslmode=disable
+    --spring.datasource.url=jdbc:postgresql://192.168.1.123:26257/roach_data?sslmode=disable
     
 ### JDBC demo
 
-    java -jar roach-data-jdbc/target/roach-data-jdbc.jar 
+    java -jar roach-data-jdbc/target/roach-data-jdbc.jar
+
+with contention:
+
+    java -jar roach-data-jdbc/target/roach-data-jdbc.jar 8
 
 ### JPA demo
 
