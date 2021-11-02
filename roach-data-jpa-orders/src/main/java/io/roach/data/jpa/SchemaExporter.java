@@ -32,8 +32,8 @@ public class SchemaExporter {
             Product.class
     };
 
-    public static void _main(String[] args) throws IOException {
-        boolean drop = true;
+    public static void main(String[] args) throws IOException {
+        boolean drop = false;
         Path outFile = null;
         String delimiter = ";";
         Class dialect = CockroachDB201Dialect.class;
@@ -71,7 +71,7 @@ public class SchemaExporter {
 
         MetadataSources metadataSources = new MetadataSources(standardRegistry);
 
-        Arrays.stream(ENTITY_TYPES).sequential().forEach(clazz -> metadataSources.addAnnotatedClass(clazz));
+        Arrays.stream(ENTITY_TYPES).sequential().forEach(metadataSources::addAnnotatedClass);
 
         MetadataBuilder metadataBuilder = metadataSources.getMetadataBuilder();
         metadataBuilder.applyImplicitNamingStrategy(ImplicitNamingStrategyJpaCompliantImpl.INSTANCE);

@@ -33,7 +33,7 @@ public class Order extends AbstractEntity<UUID> {
         }
 
         public OrderItem.Builder andOrderItem() {
-            return new OrderItem.Builder(this, orderItem -> orderItems.add(orderItem));
+            return new OrderItem.Builder(this, orderItems::add);
         }
 
         public Order build() {

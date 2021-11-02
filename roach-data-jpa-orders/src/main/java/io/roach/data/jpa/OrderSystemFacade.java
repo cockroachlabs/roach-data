@@ -20,7 +20,7 @@ import io.roach.data.jpa.repository.OrderRepository;
 import io.roach.data.jpa.repository.ProductRepository;
 
 @Service
-public class ShoppingSystemFacade {
+public class OrderSystemFacade {
     protected static final Logger logger = LoggerFactory.getLogger(JpaOrdersApplication.class);
 
     @Autowired
