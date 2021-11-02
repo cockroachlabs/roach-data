@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.0</version>
+        <version>2.5.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -24,6 +24,7 @@
         <module>roach-data-jdbc-plain</module>
         <module>roach-data-jooq</module>
         <module>roach-data-jpa</module>
+        <module>roach-data-jpa-orders</module>
         <module>roach-data-json</module>
         <module>roach-data-mybatis</module>
     </modules>
@@ -33,7 +34,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <version>2.4.0</version>
+                <version>2.5.6</version>
                 <exclusions>
                     <!-- Exclude the Tomcat dependency -->
                     <exclusion>

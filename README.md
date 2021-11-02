@@ -1,4 +1,4 @@
-# Roach Demo Data
+# Roach Data
 
 Collection of small Spring Boot demos using CockroachDB with common data access frameworks and ORMs.
 The purpose is to showcase how CockroachDB can be used with a mainstream Enterprise Java framework
@@ -9,6 +9,7 @@ Data access variants include:
 - [JDBC](roach-data-jdbc/README.md) - using Spring Data JDBC 
 - [JDBC (plain)](roach-data-jdbc-plain/README.md) - using plain JDBC 
 - [JPA](roach-data-jpa/README.md) - using Spring Data JPA with Hibernate as ORM provider 
+- [JPA Orders](roach-data-jpa-orders/README.md) - using Spring Data JPA to model a simple order system 
 - [jOOQ](roach-data-jooq/README.md) - using Spring Boot with jOOQ (not officially supported by spring-data) 
 - [MyBatis](roach-data-mybatis/README.md) - using Spring Data MyBatis/JDBC
 - [JSON](roach-data-json/README.md) - using Spring Data JPA and JSONB types with inverted indexes
@@ -58,22 +59,24 @@ The service remains running after the test is complete and can be access via:
 - http://localhost:9090
 
 You could use something like Postman to send requests to the API on your own.
-
-A custom database URL is specified with a config override:
-
-    --spring.datasource.url=jdbc:postgresql://192.168.1.123:26257/roach_data?sslmode=disable
     
 ### JDBC demo
 
-    java -jar roach-data-jdbc/target/roach-data-jdbc.jar
+(Using custom JDBC URL)
 
-with contention:
+    java -jar roach-data-jdbc/target/roach-data-jdbc.jar --spring.datasource.url=jdbc:postgresql://localhost:26257/roach_data?sslmode=disable
 
-    java -jar roach-data-jdbc/target/roach-data-jdbc.jar 8
+Run with contention/retries:
+
+    java -jar roach-data-jdbc/target/roach-data-jdbc.jar --concurrency=8
 
 ### JPA demo
 
     java -jar roach-data-jpa/target/roach-data-jpa.jar
+
+### JPA orders demo
+
+    java -jar roach-data-jpa-orders/target/roach-data-jpa-orders.jar
 
 ### jOOQ demo
 

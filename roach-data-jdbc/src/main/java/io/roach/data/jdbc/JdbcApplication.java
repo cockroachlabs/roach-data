@@ -2,8 +2,10 @@ package io.roach.data.jdbc;
 
 import java.math.BigDecimal;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -43,12 +45,20 @@ public class JdbcApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        logger.info("Lets move some $$ around!");
-
+    public void run(String... args) {
         final Link transferLink = Link.of("http://localhost:9090/transfer/{?fromId,toId,amount}");
 
-        final int concurrency = args.length > 0 ? Integer.parseInt(args[0]) : 1;
+        int concurrency = 1;
+
+        LinkedList<String> argsList = new LinkedList<>(Arrays.asList(args));
+        while (!argsList.isEmpty()) {
+            String arg = argsList.pop();
+            if (arg.startsWith("--concurrency=")) {
+                concurrency = Integer.parseInt(arg.split("=")[1]);
+            }
+        }
+
+        logger.info("Lets move some $$ around! (concurrency level {})", concurrency);
 
         final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(concurrency);
 
