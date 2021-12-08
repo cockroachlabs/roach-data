@@ -1,0 +1,9 @@
+    ___
+   /() \        CockroachDB on Spring Data / Reactive ${application.formatted-version}
+ _|_____|_      powered by Spring Boot ${spring-boot.formatted-version}
+| | === | |
+|_|  0  |_|
+ ||  0  ||
+ ||__*__||
+|~ \___/ ~|
+[_]_[_]_[_]

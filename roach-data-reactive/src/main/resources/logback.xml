@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- Uncomment to enable bind logging -->
+<!--        <logger name="org.hibernate.SQL" level="DEBUG"/>-->
+    <!--    <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>-->
+
+    <logger name="io.roach" level="DEBUG"/>
+
+    <root level="INFO"/>
+</configuration>
+
