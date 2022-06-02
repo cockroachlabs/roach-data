@@ -1,6 +1,7 @@
 # Roach Data
 
 Collection of small Spring Boot demos using CockroachDB with common data access frameworks and ORMs.
+
 The purpose is to showcase how CockroachDB can be used with a mainstream Enterprise Java framework
 stack composed by Spring Boot, Spring Data and Spring HATEOAS. 
 
@@ -13,8 +14,9 @@ Data access variants include:
 - [jOOQ](roach-data-jooq/README.md) - using Spring Boot with jOOQ (not officially supported by spring-data) 
 - [MyBatis](roach-data-mybatis/README.md) - using Spring Data MyBatis/JDBC
 - [JSON](roach-data-json/README.md) - using Spring Data JPA and JSONB types with inverted indexes
+- [Reactive](roach-data-reactive/README.md) - using Spring Data r2dbc with the reactive PSQL driver
 
-Most demos are independent and use the same schema and test workload. 
+The demos are independent and use a similar schema and test workload. 
 
 Common Spring Boot features demonstrated:
 
@@ -25,9 +27,6 @@ Common Spring Boot features demonstrated:
 - Transaction retries with exponential backoff using AspectJ
 - Hypermedia API via Spring HATEOAS and HAL media type
 - Simple HTTP client invoking commands
-
-The most documented demo is the JDBC version. It includes an extra aspect for setting transaction 
-attributes such timeouts and read-only hints. 
 
 ## Prerequisites
 
@@ -85,3 +84,7 @@ Run with contention/retries:
 ### MyBatis demo
 
     java -jar roach-data-mybatis/target/roach-data-mybatis.jar
+
+### Reactive demo
+
+    java -jar roach-data-reactive/target/roach-data-reactive.jar
