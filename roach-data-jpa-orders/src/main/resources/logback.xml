@@ -2,10 +2,8 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-    <!-- Uncomment to enable bind logging (DS proxy is better) -->
-<!--        <logger name="org.hibernate.SQL" level="DEBUG"/>-->
-    <!--    <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>-->
-
+    <logger name="org.springframework.transaction" level="TRACE"/>
+    <logger name="org.springframework.orm" level="TRACE"/>
     <logger name="io.roach" level="DEBUG"/>
     <logger name="io.roach.SQL_TRACE" level="TRACE"/>
 

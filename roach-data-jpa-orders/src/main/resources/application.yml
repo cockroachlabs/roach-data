@@ -14,6 +14,7 @@ spring:
     enabled: true
     clean-on-validation-error: true
     ignore-pending-migrations: true
+    baseline-on-migrate: true
   datasource:
     url: jdbc:postgresql://localhost:26257/roach_data?sslmode=disable
     driver-class-name: org.postgresql.Driver
@@ -23,6 +24,7 @@ spring:
       connection-test-query: SELECT 1
       maximum-pool-size: 20
       minimum-idle: 20
+      auto-commit: false
   jpa:
     open-in-view: false
     properties:

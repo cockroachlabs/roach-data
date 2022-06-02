@@ -1,4 +1,4 @@
-package io.roach.data.jpa.config;
+package io.roach.data.jpa.service;
 
 import java.util.Properties;
 
@@ -8,11 +8,15 @@ import javax.sql.DataSource;
 import org.hibernate.cache.internal.NoCachingRegionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.CockroachDB201Dialect;
+import org.postgresql.ds.PGSimpleDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -24,16 +28,18 @@ import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableJpaRepositories(basePackages = {"io.roach"})
 public class JpaConfiguration {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Bean
     @ConfigurationProperties("spring.datasource")
     public DataSourceProperties dataSourceProperties() {
@@ -42,10 +48,10 @@ public class JpaConfiguration {
 
     @Bean
     @ConfigurationProperties("spring.datasource.hikari")
-    public HikariDataSource hikariDataSource() {
+    public PGSimpleDataSource primaryDataSource() {
         return dataSourceProperties()
                 .initializeDataSourceBuilder()
-                .type(HikariDataSource.class)
+                .type(PGSimpleDataSource.class)
                 .build();
     }
 
@@ -53,7 +59,7 @@ public class JpaConfiguration {
     @Primary
     public DataSource dataSource() {
         return ProxyDataSourceBuilder
-                .create(hikariDataSource())
+                .create(primaryDataSource())
                 .name("SQL-Trace")
                 .asJson()
                 .logQueryBySlf4j(SLF4JLogLevel.TRACE, "io.roach.SQL_TRACE")
@@ -84,6 +90,11 @@ public class JpaConfiguration {
         return emf;
     }
 
+    @Bean
+    public TransactionTemplate transactionTemplate(EntityManagerFactory entityManagerFactory) {
+        return new TransactionTemplate(transactionManager(entityManagerFactory));
+    }
+
     private Properties jpaVendorProperties() {
         return new Properties() {
             {
@@ -99,6 +110,7 @@ public class JpaConfiguration {
                 setProperty(Environment.FORMAT_SQL, Boolean.FALSE.toString());
                 // Mutes Postgres JPA Error (Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented).
                 setProperty(Environment.NON_CONTEXTUAL_LOB_CREATION, Boolean.TRUE.toString());
+//                setProperty(Environment.CONNECTION_PROVIDER_DISABLES_AUTOCOMMIT, Boolean.TRUE.toString());
             }
         };
     }

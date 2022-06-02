@@ -1,4 +1,4 @@
-package io.roach.data.jpa;
+package io.roach.data.jpa.service;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -7,11 +7,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
+import io.roach.data.jpa.JpaOrdersApplication;
 import io.roach.data.jpa.domain.Customer;
 import io.roach.data.jpa.domain.Order;
 import io.roach.data.jpa.domain.Product;
@@ -20,7 +25,7 @@ import io.roach.data.jpa.repository.OrderRepository;
 import io.roach.data.jpa.repository.ProductRepository;
 
 @Service
-public class OrderSystemFacade {
+public class OrderSystemImpl implements OrderSystem {
     protected static final Logger logger = LoggerFactory.getLogger(JpaOrdersApplication.class);
 
     @Autowired
@@ -32,6 +37,10 @@ public class OrderSystemFacade {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private OrderService orderService;
+
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void clearAll() {
         Assert.isTrue(TransactionSynchronizationManager.isActualTransactionActive(), "TX not active");
@@ -40,6 +49,7 @@ public class OrderSystemFacade {
         customerRepository.deleteAll();
     }
 
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createProductInventory() {
         Product p1 = Product.builder()
@@ -60,6 +70,7 @@ public class OrderSystemFacade {
         productRepository.save(p2);
     }
 
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createCustomers() {
         Customer c1 = Customer.builder()
@@ -78,6 +89,7 @@ public class OrderSystemFacade {
         customerRepository.save(c2);
     }
 
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createOrders() {
         Optional<Product> p1 = productRepository.findProductBySku("CRDB-UL-ED1");
@@ -120,7 +132,8 @@ public class OrderSystemFacade {
         orderRepository.save(o2);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public void listOrders() {
         logger.info("Placed orders:");
 
@@ -145,6 +158,39 @@ public class OrderSystemFacade {
 
     }
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
+    @Override
+    @Transactional(propagation = Propagation.NEVER, readOnly = true)
+    public Product findProductBySku(String sku) {
+        Assert.isTrue(TransactionSynchronizationManager.isCurrentTransactionReadOnly(),"Not read-only");
+        Assert.isTrue(!TransactionSynchronizationManager.isActualTransactionActive(),"No tx");
+
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        transactionTemplate.setReadOnly(true);
+
+        Product p= transactionTemplate.execute(new TransactionCallback<Product>() {
+            @Override
+            public Product doInTransaction(TransactionStatus status) {
+                Optional<Product> p1 = productRepository.findProductBySkuNoLock(sku);
+                Product p = p1.orElseThrow(() -> new IllegalArgumentException("Not found"));
+                p.setPrice(BigDecimal.ZERO);
+                return p;
+
+            }
+        });
+        productRepository.saveAndFlush(p);
+        return p;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
+    public BigDecimal getTotalOrderPrice() {
+        return orderService.getTotalOrderPrice();
+    }
+
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeOrders() {
         orderRepository.findOrdersByUserName("adolfo").forEach(order -> {

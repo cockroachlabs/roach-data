@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfigu
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @Configuration
 @EnableAutoConfiguration(exclude = {
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
         DataSourceTransactionManagerAutoConfiguration.class,
         DataSourceAutoConfiguration.class
 })
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 @ComponentScan(basePackages = "io.roach")
 public class JpaOrdersApplication {
     public static void main(String[] args) {

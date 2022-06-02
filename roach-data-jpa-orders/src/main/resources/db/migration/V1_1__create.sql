@@ -22,6 +22,7 @@ create table orders
     id          uuid           not null default gen_random_uuid(),
     customer_id uuid           not null,
     total_price numeric(19, 2) not null,
+    tags        string(128)    null,
 
     primary key (id)
 );
@@ -30,9 +31,9 @@ create table products
 (
     id        uuid           not null default gen_random_uuid(),
     inventory int            not null,
-    name      string(128) not null,
+    name      string(128)    not null,
     price     numeric(19, 2) not null,
-    sku       string(128) not null,
+    sku       string(128)    not null,
     primary key (id)
 );
 
