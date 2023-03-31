@@ -44,7 +44,6 @@ public class JdbiApplication {
                 );
             }
 
-//            transactionHandle.commit();
             return total;
         });
     }
@@ -82,8 +81,8 @@ public class JdbiApplication {
 
         final HikariDataSource hikariDS = new HikariDataSource();
         {
-//            hikariDS.setJdbcUrl("jdbc:postgresql://localhost:26257/roach_data?sslmode=disable");
-            hikariDS.setJdbcUrl("jdbc:postgresql://192.168.1.99:26257/roach_data?sslmode=disable");
+            hikariDS.setJdbcUrl("jdbc:postgresql://localhost:26257/roach_data?sslmode=disable");
+//            hikariDS.setJdbcUrl("jdbc:postgresql://192.168.1.99:26257/roach_data?sslmode=disable");
             hikariDS.setUsername("root");
             hikariDS.setMaximumPoolSize(workers);
             hikariDS.setMinimumIdle(workers);
