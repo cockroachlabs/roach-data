@@ -15,6 +15,7 @@ Data access variants include:
 - [MyBatis](roach-data-mybatis/README.md) - using Spring Data MyBatis/JDBC
 - [JSON](roach-data-json/README.md) - using Spring Data JPA and JSONB types with inverted indexes
 - [Reactive](roach-data-reactive/README.md) - using Spring Data r2dbc with the reactive PSQL driver
+- [JDBI](roach-data-jdbi/README.md) - using JDBI with the PSQL driver
 
 The demos are independent and use a similar schema and test workload. 
 

@@ -8,9 +8,14 @@
         <version>1.0.0.BUILD-SNAPSHOT</version>
     </parent>
 
-    <artifactId>roach-data-jdbc-plain</artifactId>
+    <artifactId>roach-data-jdbi</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-core</artifactId>
+            <version>3.37.1</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.0</version>
+        <version>2.7.10</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -28,6 +28,7 @@
         <module>roach-data-json</module>
         <module>roach-data-mybatis</module>
         <module>roach-data-reactive</module>
+        <module>roach-data-jdbi</module>
     </modules>
 
     <dependencyManagement>
@@ -35,7 +36,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <version>2.7.0</version>
+                <version>2.7.10</version>
                 <exclusions>
                     <!-- Exclude the Tomcat dependency -->
                     <exclusion>
