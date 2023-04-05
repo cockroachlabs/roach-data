@@ -12,7 +12,6 @@
 
     <properties>
         <skipTests>true</skipTests>
-        <java.version>17</java.version>
     </properties>
 
     <dependencies>
@@ -53,5 +52,15 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>roach-data-parallel</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
 

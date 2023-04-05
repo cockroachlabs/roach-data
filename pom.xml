@@ -22,7 +22,6 @@
     <modules>
         <module>roach-data-jdbc</module>
         <module>roach-data-jdbc-plain</module>
-        <module>roach-data-jooq</module>
         <module>roach-data-jpa</module>
         <module>roach-data-jpa-orders</module>
         <module>roach-data-json</module>
@@ -31,6 +30,18 @@
         <module>roach-data-jdbi</module>
         <module>roach-data-parallel</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>jdk17+</id>
+            <activation>
+                <jdk>(1.4, 1.8]</jdk>
+            </activation>
+            <modules>
+                <module>roach-data-jooq</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>

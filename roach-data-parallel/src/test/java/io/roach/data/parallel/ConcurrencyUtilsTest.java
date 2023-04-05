@@ -1,10 +1,5 @@
 package io.roach.data.parallel;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -15,6 +10,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConcurrencyUtilsTest {
     private static final Logger logger = LoggerFactory.getLogger(ConcurrencyUtilsTest.class);
@@ -36,8 +36,7 @@ public class ConcurrencyUtilsTest {
     }
 
     public static Integer doMassiveCompute_AndSucceed(int value, long minWait, long maxWait) {
-        Random random = ThreadLocalRandom.current();
-        long wait = random.nextLong(minWait, maxWait);
+        long wait = minWait + (long) (Math.random() * maxWait);
 
         logger.debug("Doing massive compute ({}) - will succeed after {}", value, wait);
         try {
@@ -51,8 +50,8 @@ public class ConcurrencyUtilsTest {
     }
 
     public static Integer doMassiveCompute_AndFail(int value, long minWait, long maxWait) {
-        Random random = ThreadLocalRandom.current();
-        long wait = random.nextLong(minWait, maxWait);
+        long wait = minWait + (long) (Math.random() * maxWait);
+
         logger.debug("Doing massive compute ({}) - will fail after {}", value, wait);
         try {
             Thread.sleep(wait);

@@ -7,30 +7,26 @@
         <artifactId>roach-data-parent</artifactId>
         <version>1.0.0.BUILD-SNAPSHOT</version>
     </parent>
-1
+
     <artifactId>roach-data-jdbc-plain</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.31</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.2.3</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>4.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -39,11 +35,16 @@
         <dependency>
             <groupId>net.ttddyy</groupId>
             <artifactId>datasource-proxy</artifactId>
-            <version>1.7</version>
         </dependency>
     </dependencies>
 
     <build>
         <finalName>roach-data-jdbc-plain</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 </project>

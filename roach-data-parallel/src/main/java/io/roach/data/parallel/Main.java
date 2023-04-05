@@ -1,11 +1,5 @@
 package io.roach.data.parallel;
 
-import com.zaxxer.hikari.HikariDataSource;
-import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +11,15 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+
+import javax.sql.DataSource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.zaxxer.hikari.HikariDataSource;
+
+import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);

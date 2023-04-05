@@ -129,6 +129,7 @@ public class JdbiApplication {
         SchemaSupport.setupSchema(jdbi);
 
         List<String> names = jdbi.withHandle(JdbiApplication::readAccountNames);
+
         names.forEach(name -> {
             BigDecimal balance = jdbi.withHandle(handle -> readBalance(handle, name));
             System.out.printf("Balance before for %s: %s\n", name, balance);
