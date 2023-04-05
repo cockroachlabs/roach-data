@@ -29,6 +29,7 @@
         <module>roach-data-mybatis</module>
         <module>roach-data-reactive</module>
         <module>roach-data-jdbi</module>
+        <module>roach-data-parallel</module>
     </modules>
 
     <dependencyManagement>
