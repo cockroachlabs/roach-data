@@ -36,8 +36,7 @@ public class ConcurrencyUtilsTest {
     }
 
     public static Integer doMassiveCompute_AndSucceed(int value, long minWait, long maxWait) {
-        Random random = ThreadLocalRandom.current();
-        long wait = random.nextLong(minWait, maxWait);
+        long wait = minWait + (long) (Math.random() * maxWait);
 
         logger.debug("Doing massive compute ({}) - will succeed after {}", value, wait);
         try {
@@ -51,8 +50,8 @@ public class ConcurrencyUtilsTest {
     }
 
     public static Integer doMassiveCompute_AndFail(int value, long minWait, long maxWait) {
-        Random random = ThreadLocalRandom.current();
-        long wait = random.nextLong(minWait, maxWait);
+        long wait = minWait + (long) (Math.random() * maxWait);
+
         logger.debug("Doing massive compute ({}) - will fail after {}", value, wait);
         try {
             Thread.sleep(wait);
