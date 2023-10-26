@@ -80,15 +80,13 @@ public class AccountController {
             throw new IllegalArgumentException("From and to accounts must be different");
         }
 
-        return accountRepository.getBalance(fromId).map(balance -> {
+        return accountRepository.getBalance(fromId).<BigDecimal>handle((balance, sink) -> {
             if (balance.compareTo(BigDecimal.ZERO) < 0) {
-                throw new NegativeBalanceException("Insufficient funds " + amount + " for account " + fromId);
+                sink.error(new NegativeBalanceException("Insufficient funds " + amount + " for account " + fromId));
+                return;
             }
-            return balance;
-        }).flatMap(unused -> {
-            return accountRepository.updateBalance(fromId, amount.negate());
-        }).flatMap(unused -> {
-            return accountRepository.updateBalance(toId, amount);
-        });
+            sink.next(balance);
+        }).flatMap(unused -> accountRepository.updateBalance(fromId, amount.negate()))
+                .then(Mono.defer(() -> accountRepository.updateBalance(toId, amount)));
     }
 }

@@ -84,8 +84,8 @@ public class ReactiveApplication implements CommandLineRunner {
                 int errors = 0;
 
                 for (int j = 0; j < 100; j++) {
-                    int fromId = 1 + random.nextInt(10000);
-                    int toId = fromId % 10000 + 1;
+                    int fromId = 1 + random.nextInt(100);
+                    int toId = fromId % 100 + 1;
 
                     BigDecimal amount = new BigDecimal("10.00");
 
