@@ -2,18 +2,30 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>io.roach.data</groupId>
-        <artifactId>roach-data-parent</artifactId>
-        <version>1.0.0.BUILD-SNAPSHOT</version>
+        <artifactId>roach-data-3x-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../roach-data-3x-parent</relativePath>
     </parent>
 
     <artifactId>roach-data-reactive</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <skipTests>true</skipTests>
+        <jakarta-servlet.version>5.0.0</jakarta-servlet.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -32,8 +44,9 @@
             <artifactId>spring-boot-starter-data-r2dbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-r2dbc</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>r2dbc-postgresql</artifactId>
+            <version>1.0.2.RELEASE</version>
         </dependency>
     </dependencies>
 

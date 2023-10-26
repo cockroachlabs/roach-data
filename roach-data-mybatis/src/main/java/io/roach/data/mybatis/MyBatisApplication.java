@@ -68,7 +68,7 @@ public class MyBatisApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("Lets move some $$ around!");
 
-        final Link transferLink = Link.of("http://localhost:9090/transfer/{?fromId,toId,amount}");
+        final Link transferLink = Link.of("http://localhost:9090/transfer{?fromId,toId,amount}");
 
         final int concurrency = args.length > 0 ? Integer.parseInt(args[0]) : 1;
 

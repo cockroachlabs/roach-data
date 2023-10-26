@@ -2,8 +2,10 @@ package io.roach.data.reactive;
 
 import java.math.BigDecimal;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -41,14 +43,17 @@ public class ReactiveApplication implements CommandLineRunner {
     protected static final Logger logger = LoggerFactory.getLogger(ReactiveApplication.class);
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(ReactiveApplication.class).web(WebApplicationType.SERVLET).run(args);
+        new SpringApplicationBuilder(ReactiveApplication.class)
+                .web(WebApplicationType.SERVLET)
+                .run(args);
     }
 
     @Bean
     public ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
         ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
         initializer.setConnectionFactory(connectionFactory);
-        initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("db/create.sql")));
+        initializer.setDatabasePopulator(new ResourceDatabasePopulator(
+                new ClassPathResource("db/create.sql")));
         return initializer;
     }
 
@@ -56,17 +61,28 @@ public class ReactiveApplication implements CommandLineRunner {
     public void run(String... args) {
         logger.info("Lets move some $$ around!");
 
-        final int concurrency = args.length > 0 ? Integer.parseInt(args[0]) : 10;
+        int concurrency = 10;
 
-        final Link transferLink = Link.of("http://localhost:9090/transfer/{?fromId,toId,amount}");
+        LinkedList<String> stack = new LinkedList<>(Arrays.asList(args));
+        while (!stack.isEmpty()) {
+            String arg = stack.pop();
+            if (arg.equals("--concurrency")) {
+                concurrency = Integer.parseInt(stack.pop());
+            }
+        }
+
+        final Link transferLink = Link.of("http://localhost:9090/transfer{?fromId,toId,amount}");
         final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(concurrency);
         final Deque<CompletableFuture<Integer>> futures = new ArrayDeque<>();
-        final ThreadLocalRandom random = ThreadLocalRandom.current();
 
         IntStream.rangeClosed(1, concurrency).forEach(value -> {
             CompletableFuture<Integer> f = CompletableFuture.supplyAsync(() -> {
+                ThreadLocalRandom random = ThreadLocalRandom.current();
+
                 RestTemplate template = new RestTemplate();
+
                 int errors = 0;
+
                 for (int j = 0; j < 100; j++) {
                     int fromId = 1 + random.nextInt(10000);
                     int toId = fromId % 10000 + 1;
@@ -78,19 +94,19 @@ public class ReactiveApplication implements CommandLineRunner {
                     form.put("toId", toId);
                     form.put("amount", amount);
 
-                    String uri = transferLink.expand(form).getHref();
-
-                    logger.debug("({}) Transfer {} from {} to {}", uri, amount, fromId, toId);
-
                     try {
+                        String uri = transferLink.expand(form).getHref();
+                        logger.debug("({}) Transfer {} from {} to {}", uri, amount, fromId, toId);
                         template.postForEntity(uri, null, String.class);
                     } catch (HttpStatusCodeException e) {
                         logger.warn(e.getResponseBodyAsString());
                         errors++;
                     }
                 }
+
                 return errors;
             });
+
             futures.add(f);
         });
 

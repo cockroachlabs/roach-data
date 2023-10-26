@@ -46,7 +46,7 @@ public class JdbcApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        final Link transferLink = Link.of("http://localhost:9090/transfer/{?fromId,toId,amount}");
+        final Link transferLink = Link.of("http://localhost:9090/transfer{?fromId,toId,amount}");
 
         int concurrency = 1;
 
