@@ -22,6 +22,7 @@
         <module>roach-data-json</module>
         <module>roach-data-mybatis</module>
         <module>roach-data-reactive</module>
+        <module>roach-data-reactive-2x</module>
         <module>roach-data-jdbi</module>
         <module>roach-data-parallel</module>
     </modules>
