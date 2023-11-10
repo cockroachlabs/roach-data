@@ -1,14 +1,11 @@
 package io.roach.data.jpa.service;
 
-import java.util.Properties;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
+import com.zaxxer.hikari.HikariDataSource;
+import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
+import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 import org.hibernate.cache.internal.NoCachingRegionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.CockroachDB201Dialect;
-import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +27,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
-import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
@@ -47,23 +45,31 @@ public class JpaConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties("spring.datasource.hikari")
-    public PGSimpleDataSource primaryDataSource() {
-        return dataSourceProperties()
-                .initializeDataSourceBuilder()
-                .type(PGSimpleDataSource.class)
-                .build();
+    @Primary
+    public DataSource primaryDataSource() {
+        return loggingProxy(targetDataSource());
     }
 
     @Bean
-    @Primary
-    public DataSource dataSource() {
+    @ConfigurationProperties("spring.datasource.hikari")
+    public HikariDataSource targetDataSource() {
+        HikariDataSource ds = dataSourceProperties()
+                .initializeDataSourceBuilder()
+                .type(HikariDataSource.class)
+                .build();
+        ds.addDataSourceProperty("reWriteBatchedInserts", true);
+        ds.addDataSourceProperty("ApplicationName", "jdbc-test");
+        return ds;
+    }
+
+    private DataSource loggingProxy(DataSource dataSource) {
         return ProxyDataSourceBuilder
-                .create(primaryDataSource())
+                .create(dataSource)
                 .name("SQL-Trace")
                 .asJson()
-                .logQueryBySlf4j(SLF4JLogLevel.TRACE, "io.roach.SQL_TRACE")
-//                .multiline()
+                .countQuery()
+                .logQueryBySlf4j(SLF4JLogLevel.TRACE, logger.getName())
+                .multiline()
                 .build();
     }
 
@@ -83,7 +89,7 @@ public class JpaConfiguration {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-        emf.setDataSource(dataSource());
+        emf.setDataSource(primaryDataSource());
         emf.setPackagesToScan("io.roach");
         emf.setJpaProperties(jpaVendorProperties());
         emf.setJpaVendorAdapter(jpaVendorAdapter());

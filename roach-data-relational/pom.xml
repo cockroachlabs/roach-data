@@ -4,39 +4,19 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.roach.data</groupId>
-        <artifactId>roach-data-2x-parent</artifactId>
+        <artifactId>roach-data-3x-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../roach-data-2x-parent</relativePath>
+        <relativePath>../roach-data-3x-parent</relativePath>
     </parent>
 
-    <artifactId>roach-data-jpa-orders</artifactId>
+    <artifactId>roach-data-relational</artifactId>
 
     <dependencies>
-<!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
--->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jdbc</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-commons</artifactId>
-        </dependency>
 
-<!--
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-        </dependency>
--->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -45,16 +25,17 @@
         <dependency>
             <groupId>net.ttddyy</groupId>
             <artifactId>datasource-proxy</artifactId>
+            <version>1.9</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>roach-data-jpa-orders</finalName>
+        <finalName>roach-data-jdbc-orders</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -17,6 +17,7 @@
         <module>roach-data-3x-parent</module>
         <module>roach-data-jdbc</module>
         <module>roach-data-jdbc-plain</module>
+        <module>roach-data-relational</module>
         <module>roach-data-jpa</module>
         <module>roach-data-jpa-orders</module>
         <module>roach-data-json</module>

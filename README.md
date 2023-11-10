@@ -5,16 +5,18 @@ Collection of small Spring Boot demos using CockroachDB with common data access 
 The purpose is to showcase how CockroachDB can be used with a mainstream Enterprise Java framework
 stack composed by Spring Boot, Spring Data and Spring HATEOAS. 
 
-Data access variants include:
+Data access variants include the following. All are based on Spring Boot 2.x unless marked with 3.x:
 
-- [JDBC](roach-data-jdbc/README.md) - using Spring Data JDBC 
-- [JDBC (plain)](roach-data-jdbc-plain/README.md) - using plain JDBC 
+- [JDBC](roach-data-jdbc/README.md) - using plain Spring Data JDBC 
+- [JDBC (plain)](roach-data-jdbc-plain/README.md) - using plain JDBC (not spring data) 
+- [Relational (3.x)](roach-data-jdbc-plain/README.md) - using Spring Data JDBC / Relational (spring boot 3.x)
 - [JPA](roach-data-jpa/README.md) - using Spring Data JPA with Hibernate as ORM provider 
-- [JPA Orders](roach-data-jpa-orders/README.md) - using Spring Data JPA to model a simple order system 
+- [JPA (orders)](roach-data-jpa-orders/README.md) - using Spring Data JPA to model a simple order system 
 - [jOOQ](roach-data-jooq/README.md) - using Spring Boot with jOOQ (not officially supported by spring-data) 
 - [MyBatis](roach-data-mybatis/README.md) - using Spring Data MyBatis/JDBC
 - [JSON](roach-data-json/README.md) - using Spring Data JPA and JSONB types with inverted indexes
-- [Reactive](roach-data-reactive/README.md) - using Spring Data r2dbc with the reactive PSQL driver
+- [Reactive](roach-data-reactive/README.md) - using Spring Data r2dbc with the reactive PSQL driver (spring boot 3.x)
+- [Reactive (2.x)](roach-data-reactive-2x/README.md) - using Spring Data r2dbc with the reactive PSQL driver
 - [JDBI](roach-data-jdbi/README.md) - using JDBI with the PSQL driver
 
 The demos are independent and use a similar schema and test workload. 
@@ -31,7 +33,7 @@ Common Spring Boot features demonstrated:
 
 ## Prerequisites
 
-- JDK8+ with 1.8 language level (OpenJDK compatible)
+- JDK17+ LTS (OpenJDK compatible)
 - Maven 3+ (wrapper provided)
 - CockroachDB with a database named `roach_data` 
 
