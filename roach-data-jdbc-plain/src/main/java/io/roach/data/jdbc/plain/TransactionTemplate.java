@@ -70,6 +70,7 @@ public class TransactionTemplate {
     public static <T> T executeWithSavepointRetries(DataSource ds,
                                                     TransactionCallback<T> action) {
         int maxCalls = 10;
+
         for (int n = 1; n <= maxCalls; n++) {
             try (Connection conn = ds.getConnection()) {
                 conn.setAutoCommit(false);
@@ -78,6 +79,7 @@ public class TransactionTemplate {
                     Savepoint savepoint = conn.setSavepoint("cockroach_restart");
 
                     T result;
+
                     for (int i = 0; ; i++) {
                         if (i > 10) {
                             throw new DataAccessException("Too many transient errors - giving up");
@@ -85,24 +87,18 @@ public class TransactionTemplate {
 
                         try {
                             result = action.doInTransaction(conn);
-
-                            try {
-                                conn.releaseSavepoint(savepoint);
-                            } catch (SQLException e) {
-                                if ("40001".equals(e.getSQLState())) {
-                                    conn.rollback(savepoint);
-                                    handleTransientException(e, n, maxCalls);
-                                } else {
-                                    conn.rollback();
-                                    throw e;
-                                }
-                            }
+                            conn.releaseSavepoint(savepoint);
                             break;
                         } catch (SQLException e) {
-                            conn.rollback();
-                            throw e;
+                            conn.rollback(savepoint);
+                            if ("40001".equals(e.getSQLState())) {
+                                handleTransientException(e, n, maxCalls);
+                            } else {
+                                throw e;
+                            }
                         }
                     }
+
                     conn.commit();
                     return result;
                 } catch (SQLException ex) {
