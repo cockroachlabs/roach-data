@@ -105,11 +105,12 @@ public class PlainJdbcApplication {
         int workers = Runtime.getRuntime().availableProcessors();
 
         final HikariDataSource hikariDS = new HikariDataSource();
-        hikariDS.setJdbcUrl("jdbc:postgresql://localhost:26257/roach_data?sslmode=disable");
+        hikariDS.setJdbcUrl("jdbc:postgresql://localhost:26257/test?sslmode=disable");
+//        hikariDS.setJdbcUrl("jdbc:postgresql://192.168.1.99:26257/test?sslmode=disable");
         hikariDS.setUsername("root");
-        hikariDS.setAutoCommit(true);
-        hikariDS.setMaximumPoolSize(workers);
-        hikariDS.setMinimumIdle(workers);
+        hikariDS.setAutoCommit(false);
+        hikariDS.setMaximumPoolSize(50);
+        hikariDS.setMinimumIdle(5);
 
         boolean enableProxy = Arrays.asList(args).contains("--enable-proxy");
 
@@ -130,11 +131,11 @@ public class PlainJdbcApplication {
         final BigDecimal initialBalance = ConnectionTemplate.execute(ds, PlainJdbcApplication::readTotalBalance);
         System.out.printf("Total balance before: %s\n", initialBalance);
 
-        // Run concurrently for more exiting effects
+        // Run concurrently for more existing effects
         final ExecutorService executorService = Executors.newFixedThreadPool(workers);
         final Deque<Future<BigDecimal>> futures = new ArrayDeque<>();
 
-        final int iterations = 200;
+        final int iterations = 10;
         final ThreadLocalRandom random = ThreadLocalRandom.current();
 
         IntStream.rangeClosed(1, iterations).forEach(
@@ -153,7 +154,7 @@ public class PlainJdbcApplication {
 
                             System.out.printf("\r%,8d/%d", value, iterations);
 
-                            return TransactionTemplate.execute(ds, transfer(legs));
+                            return TransactionTemplate.executeWithSavepointRetries(ds, transfer(legs));
                         }
                 )));
 
@@ -189,6 +190,7 @@ public class PlainJdbcApplication {
         System.out.printf("Total turnover: %s\n", total);
         System.out.printf("Total balance before: %s\n", initialBalance);
         System.out.printf("Total balance after: %s\n", finalBalance);
+
         if (!finalBalance.equals(initialBalance)) {
             System.out.println("Balance invariant violation! (╯°□°)╯︵ ┻━┻");
             System.out.printf("Lost funds: %s\n", initialBalance.subtract(finalBalance));

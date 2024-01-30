@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.roach.data</groupId>
-        <artifactId>roach-data-2x-parent</artifactId>
+        <artifactId>roach-data-3x-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../roach-data-2x-parent</relativePath>
+        <relativePath>../roach-data-3x-parent</relativePath>
     </parent>
 
     <artifactId>roach-data-jdbc-plain</artifactId>
@@ -36,6 +36,7 @@
         <dependency>
             <groupId>net.ttddyy</groupId>
             <artifactId>datasource-proxy</artifactId>
+            <version>1.9</version>
         </dependency>
     </dependencies>
 
