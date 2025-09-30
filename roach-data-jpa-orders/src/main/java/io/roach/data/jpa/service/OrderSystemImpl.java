@@ -1,19 +1,16 @@
 package io.roach.data.jpa.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import io.roach.data.jpa.JpaOrdersApplication;
@@ -134,54 +131,22 @@ public class OrderSystemImpl implements OrderSystem {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
-    public void listOrders() {
-        logger.info("Placed orders:");
-
-        orderRepository.findAll().forEach(order -> {
-            Customer c = order.getCustomer();
-            logger.info(">> Order placed by {}", c.getUserName());
-            logger.info("\tOrder total price: {}", order.getTotalPrice());
-            logger.info("\tOrder items:");
-
-            order.getOrderItems().forEach(orderItem -> {
-                Product p = orderItem.getProduct();
-                logger.info("\t\t{} price: {} sku: {} qty: {} unit price: {} cost: {}",
-                        p.getName(),
-                        p.getPrice(),
-                        p.getSku(),
-                        orderItem.getQuantity(),
-                        orderItem.getUnitPrice(),
-                        orderItem.totalCost()
-                );
-            });
-        });
-
+    public List<Order> listAllOrders() {
+        return orderRepository.findAllOrders();
     }
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+    public List<Order> listAllOrderDetails() {
+        return orderRepository.findAllOrderDetails();
+    }
 
     @Override
     @Transactional(propagation = Propagation.NEVER, readOnly = true)
     public Product findProductBySku(String sku) {
-        Assert.isTrue(TransactionSynchronizationManager.isCurrentTransactionReadOnly(),"Not read-only");
-        Assert.isTrue(!TransactionSynchronizationManager.isActualTransactionActive(),"No tx");
-
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.setReadOnly(true);
-
-        Product p= transactionTemplate.execute(new TransactionCallback<Product>() {
-            @Override
-            public Product doInTransaction(TransactionStatus status) {
-                Optional<Product> p1 = productRepository.findProductBySkuNoLock(sku);
-                Product p = p1.orElseThrow(() -> new IllegalArgumentException("Not found"));
-                p.setPrice(BigDecimal.ZERO);
-                return p;
-
-            }
-        });
-        productRepository.saveAndFlush(p);
-        return p;
+        Assert.isTrue(TransactionSynchronizationManager.isCurrentTransactionReadOnly(), "Not read-only");
+        Assert.isTrue(!TransactionSynchronizationManager.isActualTransactionActive(), "No tx");
+        return productRepository.findProductBySku(sku).orElseThrow();
     }
 
     @Override
@@ -193,10 +158,11 @@ public class OrderSystemImpl implements OrderSystem {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeOrders() {
-        orderRepository.findOrdersByUserName("adolfo").forEach(order -> {
-            logger.info("Deleting order id {} customer {}",
-                    order.getId(), order.getCustomer().getUserName());
-            orderRepository.delete(order);
-        });
+        orderRepository.deleteAllInBatch();
+//        orderRepository.findOrdersByUserName("adolfo").forEach(order -> {
+//            logger.info("Deleting order id {} customer {}",
+//                    order.getId(), order.getCustomer().getUserName());
+//            orderRepository.delete(order);
+//        });
     }
 }

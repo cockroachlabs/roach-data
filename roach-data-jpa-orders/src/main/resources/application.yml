@@ -10,11 +10,10 @@ spring:
     ansi:
       enabled: ALWAYS
   flyway:
-    connect-retries: 50
     enabled: true
-    clean-on-validation-error: true
-    ignore-pending-migrations: true
+    connect-retries: 15
     baseline-on-migrate: true
+    clean-disabled: false
   datasource:
     url: jdbc:postgresql://localhost:26257/roach_data?sslmode=disable
     driver-class-name: org.postgresql.Driver
@@ -29,8 +28,21 @@ spring:
     open-in-view: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.CockroachDB201Dialect
-    show-sql: false
+        connection:
+          provider_disables_autocommit: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+          batch_size: 128
+          fetch_size: 128
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        hql:
+          bulk_id_strategy: org.hibernate.hql.spi.id.inline.CteValuesListBulkIdStrategy
+        cache:
+          use_minimal_puts: true
+          use_second_level_cache: false
 #############################
 logging:
   pattern:

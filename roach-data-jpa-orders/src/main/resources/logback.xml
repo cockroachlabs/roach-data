@@ -2,8 +2,16 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-    <logger name="org.springframework.transaction" level="TRACE"/>
-    <logger name="org.springframework.orm" level="TRACE"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%-15thread] %highlight(%-5level) %cyan(%logger{15}) %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework.transaction" level="INFO"/>
+    <logger name="org.springframework.orm" level="INFO"/>
+
     <logger name="io.roach" level="DEBUG"/>
     <logger name="io.roach.SQL_TRACE" level="TRACE"/>
 

@@ -3,7 +3,7 @@ package io.roach.data.jpa.repository;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.persistence.LockModeType;
+import jakarta.persistence.LockModeType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

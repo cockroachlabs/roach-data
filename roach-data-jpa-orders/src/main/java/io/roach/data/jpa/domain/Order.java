@@ -6,11 +6,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.*;
-
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "orders")
@@ -67,8 +77,8 @@ public class Order extends AbstractEntity<UUID> {
     private Customer customer;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    @JoinTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
+    @JoinTable(name = "order_items",
+            joinColumns = @JoinColumn(name = "order_id"))
     @OrderColumn(name = "item_pos")
     @Fetch(FetchMode.SUBSELECT)
     private List<OrderItem> orderItems = new ArrayList<>();

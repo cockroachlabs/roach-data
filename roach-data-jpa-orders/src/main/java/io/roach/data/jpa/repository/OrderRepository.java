@@ -16,8 +16,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = "delete from order_items where 1=1", nativeQuery = true)
     void deleteAllOrderItems();
 
-    @Query(value = "from Order o")
-    List<Order> findOrders();
+    @Query(value = "from Order o "
+                   + "join fetch o.customer c")
+    List<Order> findAllOrders();
+
+    @Query(value = "from Order o "
+                   + "join fetch o.customer "
+                   + "join fetch o.orderItems oi "
+                   + "join fetch oi.product")
+    List<Order> findAllOrderDetails();
 
     @Query(value = "from Order o "
             + "join fetch o.customer c "
