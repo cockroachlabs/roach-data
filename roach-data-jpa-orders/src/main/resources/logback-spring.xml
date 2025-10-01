@@ -12,8 +12,9 @@
     <logger name="org.springframework.transaction" level="INFO"/>
     <logger name="org.springframework.orm" level="INFO"/>
 
-    <logger name="io.roach" level="DEBUG"/>
-    <logger name="io.roach.SQL_TRACE" level="TRACE"/>
+    <logger name="io.roach.data.jpa" level="DEBUG"/>
+    <logger name="io.roach.data.jpa.SQL_TRACE" level="DEBUG"/>
+    <logger name="io.roach.data.jpa.experimental" level="TRACE"/>
 
     <root level="INFO"/>
 </configuration>

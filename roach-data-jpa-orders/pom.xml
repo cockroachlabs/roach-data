@@ -10,6 +10,11 @@
     </parent>
 
     <artifactId>roach-data-jpa-orders</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <skipTests>true</skipTests>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -27,6 +32,7 @@
         <dependency>
             <groupId>net.ttddyy</groupId>
             <artifactId>datasource-proxy</artifactId>
+            <version>1.11.0</version>
         </dependency>
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
@@ -34,10 +40,11 @@
             <version>2.4.1</version>
             <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+            <!-- Downgrade to avoid issues with 10.x -->
+            <version>9.22.3</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -53,6 +60,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -1,8 +1,7 @@
-########################
+#############################
 # Spring boot properties
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
-########################
-
+#############################
 spring:
   profiles:
     active:
@@ -14,20 +13,11 @@ spring:
     connect-retries: 15
     baseline-on-migrate: true
     clean-disabled: false
-  datasource:
-    url: jdbc:postgresql://localhost:26257/roach_data?sslmode=disable
-    driver-class-name: org.postgresql.Driver
-    username: root
-    password:
-    hikari:
-      connection-test-query: SELECT 1
-      maximum-pool-size: 20
-      minimum-idle: 20
-      auto-commit: false
   jpa:
     open-in-view: false
     properties:
       hibernate:
+        use_sql_comments: true
         connection:
           provider_disables_autocommit: false
         jdbc:
@@ -43,6 +33,20 @@ spring:
         cache:
           use_minimal_puts: true
           use_second_level_cache: false
+        session_factory:
+          statement_inspector: io.roach.data.jpa.experimental.QueryInterceptor
+  datasource:
+    url: jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable
+    driver-class-name: org.postgresql.Driver
+    username: root
+    password:
+    hikari:
+      connection-test-query: SELECT 1
+      maximum-pool-size: 20
+      minimum-idle: 0
+      auto-commit: true
+      transaction-isolation: TRANSACTION_SERIALIZABLE
+      initialization-fail-timeout: -1
 #############################
 logging:
   pattern:

@@ -1,4 +1,4 @@
-package io.roach.data.jpa;
+package io.roach.data.jpa.config;
 
 import javax.sql.DataSource;
 
@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -23,12 +22,14 @@ import net.ttddyy.dsproxy.listener.logging.SLF4JLogLevel;
 import net.ttddyy.dsproxy.listener.logging.SLF4JQueryLoggingListener;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
+import io.roach.data.jpa.repository.CustomerRepository;
+
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@EnableJpaRepositories(basePackages = {"io.roach"})
-public class JpaConfiguration {
-    private final Logger logger = LoggerFactory.getLogger("io.roach.SQL_TRACE");
+@EnableJpaRepositories(basePackageClasses = CustomerRepository.class, enableDefaultTransactions = false)
+public class JpaConfig {
+    private final Logger logger = LoggerFactory.getLogger("io.roach.data.jpa.SQL_TRACE");
 
     @Bean
     @ConfigurationProperties("spring.datasource")
@@ -39,7 +40,7 @@ public class JpaConfiguration {
     @Bean
     @Primary
     public DataSource primaryDataSource() {
-        return loggingProxy(targetDataSource());
+        return logger.isTraceEnabled() ? loggingProxy(targetDataSource()) : targetDataSource();
     }
 
     @Bean
@@ -57,7 +58,7 @@ public class JpaConfiguration {
     private DataSource loggingProxy(DataSource dataSource) {
         final Formatter formatterBasic = FormatStyle.BASIC.getFormatter();
         final Formatter formatterHighlight = FormatStyle.HIGHLIGHT.getFormatter();
-        // use pretty formatted query with multiline and ansi highlight enabled
+
         DefaultQueryLogEntryCreator creator = new DefaultQueryLogEntryCreator() {
             @Override
             protected String formatQuery(String query) {
@@ -79,10 +80,5 @@ public class JpaConfiguration {
                 .asJson()
                 .listener(listener)
                 .build();
-    }
-
-    @Bean
-    public PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor() {
-        return new PersistenceExceptionTranslationPostProcessor();
     }
 }

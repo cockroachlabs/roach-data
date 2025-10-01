@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
 @EnableAutoConfiguration(exclude = {
         DataSourceAutoConfiguration.class
 })
-@ComponentScan(basePackages = "io.roach")
-public class JpaOrdersApplication {
+@ComponentScan(basePackageClasses = Main.class)
+public class Main {
     public static void main(String[] args) {
-        new SpringApplicationBuilder(JpaOrdersApplication.class)
+        new SpringApplicationBuilder(Main.class)
                 .web(WebApplicationType.NONE)
                 .run(args);
     }

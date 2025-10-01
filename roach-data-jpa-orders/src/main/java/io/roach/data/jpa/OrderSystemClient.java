@@ -1,6 +1,7 @@
 package io.roach.data.jpa;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import io.roach.data.jpa.service.OrderSystem;
 
 @Component
 public class OrderSystemClient implements CommandLineRunner {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private OrderSystem orderSystem;
@@ -25,48 +26,55 @@ public class OrderSystemClient implements CommandLineRunner {
         orderSystem.clearAll();
         orderSystem.createProductInventory();
         orderSystem.createCustomers();
-        orderSystem.createOrders();
+        List<UUID> ids = orderSystem.createOrders();
 
-        List<Order> orderList = orderSystem.listAllOrders();
-        list(orderList);
+        ids.forEach(id -> {
+            Order o = orderSystem.findOrderById(id);
+            print(o);
+        });
 
-        List<Order> orderList2 = orderSystem.listAllOrderDetails();
-        listAllDetails(orderList2);
+        orderSystem.listAllOrders().forEach(this::print);
+        orderSystem.listAllOrderDetails().forEach(this::print);
 
         logger.info(">> Find by sku: {}", orderSystem.findProductBySku("CRDB-UL-ED1"));
-        logger.info(">> Get total order price: {}", orderSystem.getTotalOrderPrice());
+        logger.info(">> Total order price: {}", orderSystem.getTotalOrderPrice());
 
-        logger.info("Removing orders...");
         orderSystem.removeOrders();
     }
 
-    private void list(List<Order> orderList) {
-        orderList.forEach(order -> {
-            Customer c = order.getCustomer();
-            logger.info(">> Order placed by {}", c.getUserName());
-            logger.info("\tOrder total price: {}", order.getTotalPrice());
-            logger.info("\tOrder items:");
-        });
+    private void print(Order order) {
+        Customer c = order.getCustomer();
+        logger.info("""
+                Order placed by: %s
+                     Total cost: %s
+                """.formatted(c.getUserName(), order.getTotalPrice()));
     }
 
-    private void listAllDetails(List<Order> orderList) {
-        orderList.forEach(order -> {
-            Customer c = order.getCustomer();
-            logger.info(">> Order placed by {}", c.getUserName());
-            logger.info("\tOrder total price: {}", order.getTotalPrice());
-            logger.info("\tOrder items:");
+    private void printDetails(Order order) {
+        Customer c = order.getCustomer();
 
-            order.getOrderItems().forEach(orderItem -> {
-                Product p = orderItem.getProduct();
-                logger.info("\t\t{} price: {} sku: {} qty: {} unit price: {} cost: {}",
-                        p.getName(),
-                        p.getPrice(),
-                        p.getSku(),
-                        orderItem.getQuantity(),
-                        orderItem.getUnitPrice(),
-                        orderItem.totalCost()
-                );
-            });
+        logger.info("""
+                Order placed by: %s
+                     Total cost: %s
+                """.formatted(c.getUserName(), order.getTotalPrice()));
+
+        order.getOrderItems().forEach(orderItem -> {
+            Product p = orderItem.getProduct();
+
+            logger.info("""
+                     Product name: %s
+                    Product price: %s
+                      Product sku: %s
+                         Item qty: %s
+                       Unit price: %s
+                       Total cost: %s
+                    """.formatted(
+                    p.getName(),
+                    p.getPrice(),
+                    p.getSku(),
+                    orderItem.getQuantity(),
+                    orderItem.getUnitPrice(),
+                    orderItem.totalCost()));
         });
     }
 }

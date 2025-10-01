@@ -2,18 +2,18 @@ package io.roach.data.jpa.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-import io.roach.data.jpa.JpaOrdersApplication;
 import io.roach.data.jpa.domain.Customer;
 import io.roach.data.jpa.domain.Order;
 import io.roach.data.jpa.domain.Product;
@@ -23,8 +23,6 @@ import io.roach.data.jpa.repository.ProductRepository;
 
 @Service
 public class OrderSystemImpl implements OrderSystem {
-    protected static final Logger logger = LoggerFactory.getLogger(JpaOrdersApplication.class);
-
     @Autowired
     private ProductRepository productRepository;
 
@@ -33,9 +31,6 @@ public class OrderSystemImpl implements OrderSystem {
 
     @Autowired
     private OrderRepository orderRepository;
-
-    @Autowired
-    private OrderService orderService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -88,7 +83,10 @@ public class OrderSystemImpl implements OrderSystem {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void createOrders() {
+    public List<UUID> createOrders() {
+        Assert.isTrue(!TransactionSynchronizationManager.isCurrentTransactionReadOnly(), "Not read-only");
+        Assert.isTrue(TransactionSynchronizationManager.isActualTransactionActive(), "No tx");
+
         Optional<Product> p1 = productRepository.findProductBySku("CRDB-UL-ED1");
         Optional<Product> p2 = productRepository.findProductBySku("CRDB-UL-ED2");
 
@@ -112,7 +110,7 @@ public class OrderSystemImpl implements OrderSystem {
                 .then()
                 .build();
 
-        orderRepository.save(o1);
+        o1 = orderRepository.save(o1);
 
         Order o2 = Order.builder()
                 .withCustomer(c2.get())
@@ -126,43 +124,53 @@ public class OrderSystemImpl implements OrderSystem {
                 .then()
                 .build();
 
-        orderRepository.save(o2);
+        o2 = orderRepository.save(o2);
+
+        return List.of(
+                Objects.requireNonNull(o1.getId()),
+                Objects.requireNonNull(o2.getId())
+        );
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Order> listAllOrders() {
         return orderRepository.findAllOrders();
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Order> listAllOrderDetails() {
         return orderRepository.findAllOrderDetails();
     }
 
     @Override
-    @Transactional(propagation = Propagation.NEVER, readOnly = true)
-    public Product findProductBySku(String sku) {
-        Assert.isTrue(TransactionSynchronizationManager.isCurrentTransactionReadOnly(), "Not read-only");
-        Assert.isTrue(!TransactionSynchronizationManager.isActualTransactionActive(), "No tx");
-        return productRepository.findProductBySku(sku).orElseThrow();
+    public Order findOrderById(UUID id) {
+        return orderRepository.findOrderById(id)
+                .orElseThrow(() -> new ObjectRetrievalFailureException(Order.class, id));
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public Product findProductBySku(String sku) {
+        return productRepository.findProductBySkuNoLock(sku)
+                .orElseThrow(() -> new ObjectRetrievalFailureException(Product.class, sku));
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public BigDecimal getTotalOrderPrice() {
-        return orderService.getTotalOrderPrice();
+        BigDecimal price = BigDecimal.ZERO;
+        List<Order> orders = orderRepository.findAll();
+        for (Order order : orders) {
+            price = price.add(order.getTotalPrice());
+        }
+        return price;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeOrders() {
         orderRepository.deleteAllInBatch();
-//        orderRepository.findOrdersByUserName("adolfo").forEach(order -> {
-//            logger.info("Deleting order id {} customer {}",
-//                    order.getId(), order.getCustomer().getUserName());
-//            orderRepository.delete(order);
-//        });
     }
 }
